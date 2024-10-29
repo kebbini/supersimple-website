@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gioco di Riordino</title>
+    <style>
+        #numbers {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+            gap: 10px;
+        }
+        .number {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: move;
+            user-select: none;
+        }
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="numbers"></div>
+<button id="check">Controlla</button>
+<div id="message"></div>
+
+<script>
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const numbersDiv = document.getElementById('numbers');
+
+    // Mescola i numeri
+    numbers.sort(() => Math.random() - 0.5);
+
+    // Crea i numeri nella pagina
+    numbers.forEach(num => {
+        const div = document.createElement('div');
+        div.className = 'number';
+        div.innerText = num;
+        div.draggable = true;
+
+        // Gestione dell'evento drag
+        div.addEventListener('dragstart', dragStart);
+        div.addEventListener('dragover', dragOver);
+        div.addEventListener('drop', drop);
+
+        numbersDiv.appendChild(div);
+    });
+
+    function dragStart(e) {
+        e.dataTransfer.setData('text/plain', e.target.innerText);
+        e.target.style.opacity = 0.5;
+    }
+
+    function dragOver(e) {
+        e.preventDefault();
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        const draggedNumber = e.dataTransfer.getData('text/plain');
+        const targetNumber = e.target.innerText;
+
+        // Scambia i numeri
+        e.target.innerText = draggedNumber;
+        e.target.style.opacity = 1;
+
+        const draggedDiv = [...numbersDiv.children].find(div => div.innerText === draggedNumber);
+        draggedDiv.innerText = targetNumber;
+    }
+
+    document.getElementById('check').onclick = () => {
+        const currentNumbers = [...numbersDiv.children].map(div => parseInt(div.innerText));
+        if (JSON.stringify(currentNumbers) === JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9])) {
+            document.getElementById('message').innerText = 'SIETE BELLI TACCHINI';
+        } else {
+            document.getElementById('message').innerText = 'Riprova!';
+        }
+    };
+</script>
+
+</body>
+</html>
